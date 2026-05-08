@@ -131,3 +131,4 @@ npm run lint
 
 This structure supports a basic CI/CD workflow where the frontend and backend can be linted, tested, built, containerized, and deployed as separate services with PostgreSQL as the database layer.
 the is project is for the assignment purpose
+This project is prepared for a DevOps CI/CD assignment using React, Node.js, PostgreSQL, Docker, and GitHub Actions.
