@@ -130,3 +130,4 @@ npm run lint
 ## DevOps Purpose
 
 This structure supports a basic CI/CD workflow where the frontend and backend can be linted, tested, built, containerized, and deployed as separate services with PostgreSQL as the database layer.
+the is project is for the assignment purpose
