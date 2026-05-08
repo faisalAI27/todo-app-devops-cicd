@@ -1,0 +1,1 @@
+# No external dependencies required yet; stdlib and Tkinter cover the app.
