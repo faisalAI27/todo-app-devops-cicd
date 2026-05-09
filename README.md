@@ -38,6 +38,11 @@ The backend is also exposed directly at:
 ```text
 http://localhost:5000
 ```
+## Team Documentation
+
+Team member 1 - Muhammad Ibrahim
+Team member 2 - Faisal Imran
+
 
 ## API Endpoints
 
