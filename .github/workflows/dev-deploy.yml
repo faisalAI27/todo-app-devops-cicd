@@ -88,16 +88,17 @@ jobs:
         run: |
           ssh -i ~/.ssh/ec2_key ${{ secrets.EC2_USER }}@$HOST << EOF
             set -e
+
             mkdir -p ~/todo-app-deploy
             mv ~/docker-compose.prod.yml ~/todo-app-deploy/docker-compose.prod.yml
             cd ~/todo-app-deploy
 
-            cat > .env << EOL
-FRONTEND_IMAGE=${{ secrets.ECR_REGISTRY }}/$FRONTEND_REPO:$IMAGE_TAG
-BACKEND_IMAGE=${{ secrets.ECR_REGISTRY }}/$BACKEND_REPO:$IMAGE_TAG
-EOL
+            printf '%s\n' \
+              "FRONTEND_IMAGE=${{ secrets.ECR_REGISTRY }}/$FRONTEND_REPO:$IMAGE_TAG" \
+              "BACKEND_IMAGE=${{ secrets.ECR_REGISTRY }}/$BACKEND_REPO:$IMAGE_TAG" > .env
 
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+
             docker compose --env-file .env -f docker-compose.prod.yml pull
             docker compose --env-file .env -f docker-compose.prod.yml up -d
             docker compose --env-file .env -f docker-compose.prod.yml ps
@@ -113,7 +114,7 @@ EOL
           NOTIFY_EMAILS: ${{ secrets.NOTIFY_EMAILS }}
           STATUS: ${{ job.status }}
         run: |
-          python - <<'PY'
+          python - <<'PYMAIL'
           import os, smtplib
           from email.message import EmailMessage
 
@@ -133,4 +134,4 @@ EOL
               server.starttls()
               server.login(os.environ["SMTP_USERNAME"], os.environ["SMTP_PASSWORD"])
               server.send_message(msg)
-          PY
+          PYMAIL
