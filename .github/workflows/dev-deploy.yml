@@ -1,21 +1,21 @@
-name: Testing ECR Deploy
+name: Dev ECR Deploy
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - dev
   workflow_dispatch:
 
 jobs:
   build-push-deploy:
-    name: Build, Push to ECR, and Deploy to Testing
+    name: Build, Push to ECR, and Deploy to Dev
     runs-on: ubuntu-latest
 
     env:
-      IMAGE_TAG: testing
+      IMAGE_TAG: dev
       FRONTEND_REPO: todo-frontend
       BACKEND_REPO: todo-backend
-      HOST: ${{ secrets.TEST_HOST }}
+      HOST: ${{ secrets.DEV_HOST }}
 
     steps:
       - name: Checkout code
@@ -81,11 +81,11 @@ jobs:
           chmod 600 ~/.ssh/ec2_key
           ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
 
-      - name: Copy production compose file to Testing EC2
+      - name: Copy production compose file to Dev EC2
         run: |
           scp -i ~/.ssh/ec2_key docker-compose.prod.yml ${{ secrets.EC2_USER }}@$HOST:~/docker-compose.prod.yml
 
-      - name: Deploy to Testing EC2
+      - name: Deploy to Dev EC2
         run: |
           ssh -i ~/.ssh/ec2_key ${{ secrets.EC2_USER }}@$HOST << EOF
             set -e
@@ -120,11 +120,11 @@ jobs:
           from email.message import EmailMessage
 
           msg = EmailMessage()
-          msg["Subject"] = f"Testing Deployment {os.environ['STATUS']} - Todo App"
+          msg["Subject"] = f"Dev Deployment {os.environ['STATUS']} - Todo App"
           msg["From"] = os.environ["SMTP_USERNAME"]
           msg["To"] = os.environ["NOTIFY_EMAILS"]
           msg.set_content(f"""
-          Environment: Testing
+          Environment: Dev
           Status: {os.environ['STATUS']}
           Repository: {os.environ.get('GITHUB_REPOSITORY')}
           Commit: {os.environ.get('GITHUB_SHA')}
